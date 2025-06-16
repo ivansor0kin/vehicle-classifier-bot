@@ -18,7 +18,11 @@ load_dotenv()
 
 #При деплое эти переменные должны быть установлены на сервере
 TOKEN = os.getenv("TELEGRAM_TOKEN")
-SERVER_URL = os.getenv("SERVER_URL", "http://localhost:5000")
+# Порт для внутреннего сервера. Railway устанавливает эту переменную.
+PORT = os.getenv("PORT", "5000")
+# Если переменная SERVER_URL задана, используем ее.
+# Если нет (как в деплое на Railway), собираем URL для localhost с нужным портом.
+SERVER_URL = os.getenv("SERVER_URL", f"http://127.0.0.1:{PORT}")
 
 if not TOKEN:
     raise ValueError("Необходимо установить переменную окружения: TELEGRAM_TOKEN")
