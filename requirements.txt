@@ -17,6 +17,7 @@ setuptools>=70.0.0
 # FastAPI и веб-сервер
 fastapi
 uvicorn[standard]
+python-multipart
 
 # Telegram бот
 python-telegram-bot>=20.0
