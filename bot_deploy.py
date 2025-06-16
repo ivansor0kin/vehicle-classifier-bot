@@ -32,6 +32,7 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO
 )
+logger = logging.getLogger(__name__)
 
 WELCOME_MESSAGE = (
     "Привет! Я бот для обнаружения и классификации автомобилей по типу кузова.\n\n"
