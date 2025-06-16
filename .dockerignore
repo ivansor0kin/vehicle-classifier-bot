@@ -1,0 +1,29 @@
+# Игнорировать всё в папках с моделями...
+models/*
+binary_classifier/*
+
+# ...кроме необходимых файлов
+!models/yolov5_f1.82.pt
+!binary_classifier/binary_classifier.pt
+# Не игнорировать .gitignore, если он там есть
+!models/.gitignore
+
+# Игнорировать локальные файлы разработки
+server_local.py
+bot_local.py
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Игнорировать системные файлы macOS
+.DS_Store
+
+# Игнорировать файлы git
+.git
+.gitignore
+
+# Игнорировать файлы venv
+.venv
+venv/
+env/ 
