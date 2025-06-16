@@ -13,6 +13,7 @@ from telegram.ext import (
     ContextTypes,
     CommandHandler
 )
+import asyncio
 
 load_dotenv()
 
@@ -55,6 +56,28 @@ COMMANDS_MESSAGE = (
 WAITING_MESSAGE = "Ожидаю фотографию автомобиля..."
 STOPPED_MESSAGE = "Бот остановлен. Фото не обрабатываются."
 NOT_PREDICT_MESSAGE = "Вы не в режиме /predict. Фото не обрабатывается."
+
+async def wait_for_server(url: str):
+    """Ожидает, пока сервер не станет доступен."""
+    logger.info("Ожидание запуска FastAPI сервера...")
+    # Ожидаем, пока веб-сервер хотя бы начнет отвечать
+    for i in range(15):  # Попытаться 15 раз (30 секунд)
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(f"{url}/health", timeout=2.0)
+                if response.status_code == 200:
+                    logger.info("Сервер FastAPI доступен! Ожидание загрузки моделей...")
+                    # Теперь даем время на загрузку моделей.
+                    # Вместо сложной логики, просто ждем фиксированное время.
+                    # В реальном проекте здесь бы была проверка на готовность моделей.
+                    await asyncio.sleep(15)
+                    logger.info("Предполагается, что модели загружены. Бот запускается.")
+                    return True
+        except httpx.RequestError:
+            logger.info(f"Сервер еще не доступен. Попытка {i + 1}/15.")
+            await asyncio.sleep(2)
+    logger.error("Сервер не запустился за отведенное время.")
+    return False
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(WELCOME_MESSAGE)
@@ -163,6 +186,12 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"Произошла внутренняя ошибка: {e}")
 
 def main():
+    # Проверяем доступность сервера перед запуском бота
+    server_ready = asyncio.run(wait_for_server(SERVER_URL))
+    if not server_ready:
+        logger.critical("Бот не будет запущен, так как сервер не отвечает.")
+        return
+
     app = Application.builder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start_command))

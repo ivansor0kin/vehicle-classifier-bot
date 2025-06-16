@@ -33,6 +33,11 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Vehicle Detection API", lifespan=lifespan)
 
+@app.get("/health", summary="Проверка состояния сервера")
+def health_check():
+    """Простой эндпоинт для проверки, что сервер жив."""
+    return {"status": "ok"}
+
 # --- Глобальные переменные для моделей ---
 detection_model = None
 classifier_model = None
